@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080807">
+    <title>Zakim</title>
+    <link rel="preload" href="assets/media/hero-background.webp" as="image">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="splash" aria-label="Zakim landing page">
+      <video
+        class="splash__video"
+        autoplay
+        muted
+        playsinline
+        preload="auto"
+        poster="assets/media/hero-background.webp"
+      >
+        <source src="assets/media/hero-background.mp4" type="video/mp4">
+      </video>
+
+      <svg
+        class="brand-reveal"
+        viewBox="0 0 1 1"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <defs>
+          <mask id="zakim-cutout" maskUnits="userSpaceOnUse">
+            <rect class="brand-reveal__mask-fill" fill="white"></rect>
+            <image
+              class="brand-reveal__logo"
+              href="assets/media/zakim.svg"
+              preserveAspectRatio="xMidYMid meet"
+            ></image>
+          </mask>
+        </defs>
+        <rect
+          class="brand-reveal__panel"
+          fill="white"
+          mask="url(#zakim-cutout)"
+        ></rect>
+        <image
+          class="brand-lock__logo"
+          href="assets/media/zakim.svg"
+          preserveAspectRatio="xMidYMid meet"
+        ></image>
+      </svg>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

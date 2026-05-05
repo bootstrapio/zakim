@@ -1,0 +1,57 @@
+name: Build and Publish Production
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prod-pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up ffmpeg
+        uses: FedericoCarboni/setup-ffmpeg@v3
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Build production output
+        run: npm run build
+
+      - name: Mark generated branch
+        run: |
+          cat > dist/README.md <<'EOF'
+          # Generated production branch
+
+          This branch is generated automatically from `main` by GitHub Actions.
+          Do not edit files here manually. Make changes on `main` instead.
+          EOF
+
+      - name: Publish dist to prod
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: prod
+          publish_dir: ./dist
+          force_orphan: true
+          commit_message: "Build production site from ${{ github.sha }}"
