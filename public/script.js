@@ -4,6 +4,7 @@ const revealPanel = document.querySelector(".brand-reveal__panel");
 const revealMaskFill = document.querySelector(".brand-reveal__mask-fill");
 const revealLogo = document.querySelector(".brand-reveal__logo");
 const lockLogo = document.querySelector(".brand-lock__logo");
+const lockBranding = document.querySelector(".brand-lock__branding");
 
 const revealStartsAt = 3;
 const revealEndsAt = 8;
@@ -52,8 +53,12 @@ function updateRevealGeometry() {
   const availableLogoWidth = Math.max(0, viewportWidth - viewportInset * 2);
   const logoWidth = Math.min(maxLogoWidth, availableLogoWidth);
   const logoHeight = logoWidth / logoAspectRatio;
+  const brandingSize = logoHeight * 0.80;
+  const brandingGap = clamp(logoHeight * 0.56, 36, 64);
   const logoX = (viewportWidth - logoWidth) / 2;
   const logoY = (viewportHeight - logoHeight) / 2;
+  const brandingX = (viewportWidth - brandingSize) / 2;
+  const brandingY = logoY - brandingGap - brandingSize;
 
   reveal.setAttribute("viewBox", `0 0 ${viewportWidth} ${viewportHeight}`);
   revealPanel.setAttribute("width", viewportWidth);
@@ -68,6 +73,10 @@ function updateRevealGeometry() {
   lockLogo.setAttribute("y", logoY);
   lockLogo.setAttribute("width", logoWidth);
   lockLogo.setAttribute("height", logoHeight);
+  lockBranding.setAttribute("x", brandingX);
+  lockBranding.setAttribute("y", brandingY);
+  lockBranding.setAttribute("width", brandingSize);
+  lockBranding.setAttribute("height", brandingSize);
 }
 
 function syncReveal() {
@@ -106,6 +115,7 @@ function syncReveal() {
       easeInQuad(lockProgress).toFixed(4),
     );
     lockLogo.setAttribute("opacity", easeInQuad(lockProgress).toFixed(4));
+    lockBranding.setAttribute("opacity", easeInQuad(lockProgress).toFixed(4));
   }
 
   if (currentTime >= revealEndsAt && !hasStopped) {
@@ -122,6 +132,7 @@ function stopReveal() {
   reveal.style.setProperty("--overlay-opacity", "1");
   reveal.style.setProperty("--black-logo-opacity", "1");
   lockLogo.setAttribute("opacity", "1");
+  lockBranding.setAttribute("opacity", "1");
   video.pause();
 
   if (Number.isFinite(video.duration)) {

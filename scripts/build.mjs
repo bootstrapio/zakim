@@ -154,21 +154,31 @@ async function build() {
   rmSync(distDir, { recursive: true, force: true });
   ensureDir(mediaDir);
 
-  const [htmlSource, cssSource, jsSource, svgSource] = await Promise.all([
-    readFile(join(sourceDir, "index.html"), "utf8"),
-    readFile(join(sourceDir, "styles.css"), "utf8"),
-    readFile(join(sourceDir, "script.js"), "utf8"),
-    readFile(join(sourceDir, "assets", "media", "zakim.svg"), "utf8"),
-  ]);
+  const [htmlSource, cssSource, jsSource, svgSource, brandingSvgSource] =
+    await Promise.all([
+      readFile(join(sourceDir, "index.html"), "utf8"),
+      readFile(join(sourceDir, "styles.css"), "utf8"),
+      readFile(join(sourceDir, "script.js"), "utf8"),
+      readFile(join(sourceDir, "assets", "media", "zakim.svg"), "utf8"),
+      readFile(
+        join(sourceDir, "assets", "media", "zakim-branding.svg"),
+        "utf8",
+      ),
+    ]);
 
   const css = minifyCss(cssSource);
   const js = minifyJs(jsSource);
   const svg = minifySvg(svgSource);
+  const brandingSvg = minifySvg(brandingSvgSource);
 
   const cssName = assetName("styles.css", css);
   const jsName = assetName("script.js", js);
   const posterPath = await buildPoster();
   const logoPath = await writeHashedAsset("zakim.svg", svg);
+  const brandingLogoPath = await writeHashedAsset(
+    "zakim-branding.svg",
+    brandingSvg,
+  );
   const videoPath = await buildVideo();
 
   await writeFile(join(distDir, cssName), css);
@@ -179,6 +189,7 @@ async function build() {
     htmlSource
       .replaceAll("assets/media/hero-background.webp", posterPath)
       .replaceAll("assets/media/hero-background.mp4", videoPath)
+      .replaceAll("assets/media/zakim-branding.svg", brandingLogoPath)
       .replaceAll("assets/media/zakim.svg", logoPath)
       .replace('href="styles.css"', `href="${cssName}"`)
       .replace('src="script.js"', `src="${jsName}"`),
@@ -193,6 +204,7 @@ async function build() {
       js: jsName,
       poster: posterPath,
       logo: logoPath,
+      brandingLogo: brandingLogoPath,
       video: videoPath,
     },
   };

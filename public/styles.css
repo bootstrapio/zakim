@@ -63,7 +63,8 @@ body {
   transform-origin: center;
 }
 
-.brand-lock__logo {
+.brand-lock__logo,
+.brand-lock__branding {
   opacity: var(--black-logo-opacity);
 }
 
