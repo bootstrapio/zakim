@@ -79,7 +79,7 @@ function updateRevealGeometry() {
   lockBranding.setAttribute("width", brandingSize);
   lockBranding.setAttribute("height", brandingSize);
 
-  const comingGap = clamp(logoHeight * 0.15, 16, 34);
+  const comingGap = clamp(logoHeight * 0.2, 40, 80);
   comingSoon.style.left = `${viewportWidth / 2}px`;
   comingSoon.style.top = `${logoY + logoHeight + comingGap}px`;
   comingSoon.style.transform = "translate(-50%, 0)";

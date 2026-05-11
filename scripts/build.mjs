@@ -44,7 +44,10 @@ function minifyJs(js) {
   return js
     .replace(/^\s*\/\/.*$/gm, "")
     .replace(/\s+/g, " ")
+    // Keep the space between `} ${` or minification merges numeric interpolations (e.g. viewBox).
+    .replace(/\}\s+(?=\$\{)/g, "}\uE000")
     .replace(/\s*([{}()[\],;:+\-*/%=<>?])\s*/g, "$1")
+    .replace(/\uE000/g, " ")
     .trim();
 }
 
