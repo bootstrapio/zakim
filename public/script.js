@@ -5,11 +5,12 @@ const revealMaskFill = document.querySelector(".brand-reveal__mask-fill");
 const revealLogo = document.querySelector(".brand-reveal__logo");
 const lockLogo = document.querySelector(".brand-lock__logo");
 const lockBranding = document.querySelector(".brand-lock__branding");
+const comingSoon = document.querySelector(".coming-soon");
 
 const revealStartsAt = 3;
 const revealEndsAt = 8;
-const scaleEndsAt = 7;
 const lockStartsAt = 7;
+const scaleEndsAt = lockStartsAt;
 const overlayFadeDuration = 0.7;
 const startScale = 9;
 const endScale = 1;
@@ -53,7 +54,7 @@ function updateRevealGeometry() {
   const availableLogoWidth = Math.max(0, viewportWidth - viewportInset * 2);
   const logoWidth = Math.min(maxLogoWidth, availableLogoWidth);
   const logoHeight = logoWidth / logoAspectRatio;
-  const brandingSize = logoHeight * 0.80;
+  const brandingSize = logoHeight * 0.8;
   const brandingGap = clamp(logoHeight * 0.56, 36, 64);
   const logoX = (viewportWidth - logoWidth) / 2;
   const logoY = (viewportHeight - logoHeight) / 2;
@@ -77,9 +78,19 @@ function updateRevealGeometry() {
   lockBranding.setAttribute("y", brandingY);
   lockBranding.setAttribute("width", brandingSize);
   lockBranding.setAttribute("height", brandingSize);
+
+  const comingGap = clamp(logoHeight * 0.15, 16, 34);
+  comingSoon.style.left = `${viewportWidth / 2}px`;
+  comingSoon.style.top = `${logoY + logoHeight + comingGap}px`;
+  comingSoon.style.transform = "translate(-50%, 0)";
 }
 
 function syncReveal() {
+  if (hasStopped) {
+    frameRequest = null;
+    return;
+  }
+
   const currentTime = video.currentTime;
 
   if (currentTime >= revealStartsAt) {
@@ -109,13 +120,12 @@ function syncReveal() {
       0,
       1,
     );
+    const lockOpacity = easeInQuad(lockProgress).toFixed(4);
 
-    reveal.style.setProperty(
-      "--black-logo-opacity",
-      easeInQuad(lockProgress).toFixed(4),
-    );
-    lockLogo.setAttribute("opacity", easeInQuad(lockProgress).toFixed(4));
-    lockBranding.setAttribute("opacity", easeInQuad(lockProgress).toFixed(4));
+    reveal.style.setProperty("--black-logo-opacity", lockOpacity);
+    comingSoon.style.opacity = lockOpacity;
+  } else {
+    comingSoon.style.opacity = "0";
   }
 
   if (currentTime >= revealEndsAt && !hasStopped) {
@@ -131,8 +141,7 @@ function stopReveal() {
   reveal.style.setProperty("--zakim-scale", String(endScale));
   reveal.style.setProperty("--overlay-opacity", "1");
   reveal.style.setProperty("--black-logo-opacity", "1");
-  lockLogo.setAttribute("opacity", "1");
-  lockBranding.setAttribute("opacity", "1");
+  comingSoon.style.opacity = "1";
   video.pause();
 
   if (Number.isFinite(video.duration)) {
@@ -141,13 +150,18 @@ function stopReveal() {
     video.currentTime = revealEndsAt;
   }
 
-  if (frameRequest) {
+  if (frameRequest !== null) {
     cancelAnimationFrame(frameRequest);
+    frameRequest = null;
   }
 }
 
 video.addEventListener("play", () => {
   updateRevealGeometry();
+  if (frameRequest !== null) {
+    cancelAnimationFrame(frameRequest);
+    frameRequest = null;
+  }
   frameRequest = requestAnimationFrame(syncReveal);
 });
 

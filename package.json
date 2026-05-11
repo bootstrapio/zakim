@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "verify": "node --check public/script.js && npm run build",
     "build": "node scripts/build.mjs",
     "preview": "node scripts/preview.mjs",
     "deploy:pages": "npm run build && gh workflow run deploy-pages.yml"
