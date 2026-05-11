@@ -1,4 +1,4 @@
-# Zakim Landing Page
+# ZAKIM AI Landing Page
 
 Static landing page prepared for GitHub Pages.
 
